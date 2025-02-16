@@ -7,7 +7,7 @@ if (!isset($_SESSION["user_id"])) {
 
 require_once 'database.php';
 
-$user_id = $_GET["user_id"];
+$user_id = $_SESSION["user_id"];
 $response = ["success" => false];
 
 $stmt = $conn->prepare("SELECT username, display_name, profile_picture, description FROM users WHERE id = ?");

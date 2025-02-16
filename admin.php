@@ -54,13 +54,10 @@ $conn->close();
             <div class="d-flex">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="admin.php">Admin Portal</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="logout-btn" href="index.html">Logout</a>
+                        <a class="nav-link" href="logout.php">Logout</a>
                     </li>
                 </ul>
             </div>
@@ -97,7 +94,5 @@ $conn->close();
             </tbody>
         </table>
     </div>
-    <script src="logout.js"></script>
-
 </body>
 </html>
