@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Board</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+
+        .message-board {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .message:last-child {
+            border-bottom: none;
+        }
+
+        .message time {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+
+        .message strong {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .message img.profile-pic {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        #message-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        #message-input {
+            flex: 1;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            padding: 10px;
+        }
+
+        #submit-btn {
+            border-radius: 4px;
+        }
+
+        .navbar {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Message Board</a>
+            <div class="d-flex">
+                <div id="auth-buttons">
+                    <!-- Login and Signup buttons will be dynamically inserted here -->
+                </div>
+                <div id="user-dropdown" class="dropdown" style="display: none;">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <!-- Username will be dynamically inserted here -->
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="settings.html">Settings</a></li>
+                        <li><a class="dropdown-item" href="#" id="logout-btn">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="text-center mb-4">Message Board</h1>
+        <div class="message-board" id="message-board">
+            <!-- Messages will be dynamically inserted here -->
+        </div>
+        <div id="message-form-wrapper">
+            <form id="message-form">
+                <input type="text" id="message-input" class="form-control" placeholder="Type your message..." required>
+                <button type="submit" id="submit-btn" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        // Check if the user is logged in
+        function checkLoginStatus() {
+            const authButtons = document.getElementById("auth-buttons");
+            const userDropdown = document.getElementById("user-dropdown");
+            const messageFormWrapper = document.getElementById("message-form-wrapper");
+            const username = localStorage.getItem("username");
+            const displayName = localStorage.getItem("display_name");
+        
+            if (username) {
+                // User is logged in
+                authButtons.style.display = "none";
+                userDropdown.style.display = "block";
+                document.getElementById("dropdownMenuButton").textContent = displayName || username;
+                messageFormWrapper.style.display = "block"; // Show the message form
+            } else {
+                // User is not logged in
+                authButtons.innerHTML = `
+                    <a href="login.html" class="btn btn-outline-primary me-2">Login</a>
+                    <a href="signup.html" class="btn btn-primary">Signup</a>
+                `;
+                userDropdown.style.display = "none";
+                messageFormWrapper.style.display = "none"; // Hide the message form
+            }
+        }
+
+        // Logout functionality
+        document.getElementById("logout-btn")?.addEventListener("click", function () {
+            localStorage.removeItem("username");
+            localStorage.removeItem("user_id");
+            window.location.href = "index.html";
+        });
+
+        // Function to fetch and display messages
+        function fetchMessages() {
+            fetch("submit.php")
+                .then(response => response.json())
+                .then(messages => {
+                    const messageBoard = document.getElementById("message-board");
+                    messageBoard.innerHTML = ""; // Clear previous messages
+                    messages.forEach(msg => {
+                        const messageDiv = document.createElement("div");
+                        messageDiv.className = "message";
+                        messageDiv.innerHTML = `
+                            <div>
+                                <img src="uploads/${msg.profile_picture}" alt="${msg.display_name}" class="profile-pic">
+                                <strong>${msg.display_name || msg.username}</strong>: ${msg.message}
+                            </div>
+                            <time>${new Date(msg.created_at).toLocaleString()}</time>
+                        `;
+                        messageBoard.appendChild(messageDiv);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching messages:", error);
+                });
+        }
+
+        // Check login status on page load
+        checkLoginStatus();
+
+        // Fetch messages on page load
+        fetchMessages();
+    </script>
+
+    <script>
+        // Function to handle form submission
+        document.getElementById("message-form").addEventListener("submit", function (e) {
+            e.preventDefault(); // Prevent the form from reloading the page
+
+            const messageInput = document.getElementById("message-input");
+            const message = messageInput.value.trim();
+
+            if (message) {
+                fetch("submit.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: `message=${encodeURIComponent(message)}`,
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json(); // Parse the JSON response
+                        } else {
+                            throw new Error("Failed to submit message");
+                        }
+                    })
+                    .then(() => {
+                        messageInput.value = ""; // Clear the input field
+                        fetchMessages(); // Refresh the messages
+                    })
+                    .catch(error => {
+                        console.error("Error submitting message:", error);
+                        alert("Failed to submit message. Please try again.");
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>
