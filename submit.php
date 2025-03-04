@@ -1,10 +1,6 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["user_id"])) {
-    die(json_encode(["error" => "Unauthorized access."]));
-}
-
 require_once 'database.php';
 
 // Handle form submission
