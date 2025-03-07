@@ -17,11 +17,11 @@ if (isset($userinfo['email'])) {
     $name = $userinfo['name'];
 
     // Check if the user already exists in your database
-    $stmt = $conn->prepare("SELECT id, username, is_admin FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id, username, display_name, is_admin FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
-    $stmt->bind_result($id, $username, $is_admin);
+    $stmt->bind_result($id, $username, $display_name, $is_admin);
 
     if ($stmt->fetch()) {
         // User exists, log them in
@@ -29,12 +29,20 @@ if (isset($userinfo['email'])) {
         $_SESSION["username"] = $username;
         $_SESSION["is_admin"] = $is_admin;
 
-        echo json_encode(["success" => true, "username" => $username, "user_id" => $id, "is_admin" => $is_admin]);
+        echo json_encode([
+            "success" => true, 
+            "username" => $username, 
+            "display_name" => $display_name, 
+            "user_id" => $id, 
+            "is_admin" => $is_admin
+        ]);
     } else {
         // User does not exist, create a new account
-        $stmt = $conn->prepare("INSERT INTO users (username, email, display_name) VALUES (?, ?, ?)");
         $username = str_replace(' ', '', strtolower($name)); // Generate a username
-        $stmt->bind_param("sss", $username, $email, $name);
+        $display_name = $name; // Use the full name as display name
+        
+        $stmt = $conn->prepare("INSERT INTO users (username, email, display_name) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $username, $email, $display_name);
         $stmt->execute();
 
         $user_id = $stmt->insert_id;
@@ -42,7 +50,13 @@ if (isset($userinfo['email'])) {
         $_SESSION["username"] = $username;
         $_SESSION["is_admin"] = 0; // Default to non-admin
 
-        echo json_encode(["success" => true, "username" => $username, "user_id" => $user_id, "is_admin" => 0]);
+        echo json_encode([
+            "success" => true, 
+            "username" => $username, 
+            "display_name" => $display_name, 
+            "user_id" => $user_id, 
+            "is_admin" => 0
+        ]);
     }
 
     $stmt->close();

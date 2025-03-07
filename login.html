@@ -93,8 +93,9 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Store user data in localStorage or session
+                    // Store user data in localStorage
                     localStorage.setItem("username", data.username);
+                    localStorage.setItem("display_name", data.display_name || data.username); // Add display_name
                     localStorage.setItem("user_id", data.user_id);
                     localStorage.setItem("is_admin", data.is_admin);
         
