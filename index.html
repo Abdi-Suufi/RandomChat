@@ -6,51 +6,127 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Message Board</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #6c757d;
+            --success-color: #1cc88a;
+            --accent-color: #f0f2ff;
+            --light-blue: #e8eeff;
+        }
+
         body {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 40px;
         }
 
         .container {
-            max-width: 600px;
-            margin-top: 50px;
+            max-width: 800px;
+            margin-top: 30px;
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 15px 15px;
+            margin-bottom: 30px;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .message-board-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 0;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .message-board-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .message-board-header {
+            background: var(--primary-color);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .message-board-header h1 {
+            font-size: 24px;
+            margin: 0;
+            font-weight: 600;
         }
 
         .message-board {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            margin-bottom: 20px;
             max-height: 400px;
             overflow-y: auto;
+            background-color: white;
         }
 
         .message {
             margin-bottom: 15px;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: var(--light-blue);
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .message:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .message:last-child {
-            border-bottom: none;
+            margin-bottom: 0;
         }
 
         .message time {
             font-size: 0.8em;
-            color: #6c757d;
+            color: var(--secondary-color);
+            display: block;
+            margin-top: 5px;
         }
 
         .message strong {
             font-weight: bold;
-            color: #333;
+            color: var(--primary-color);
         }
 
         .message img.profile-pic {
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             margin-right: 10px;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #message-form-wrapper {
+            background-color: white;
+            padding: 20px;
+            border-top: 1px solid #eaeaea;
+            border-radius: 0 0 20px 20px;
         }
 
         #message-form {
@@ -60,17 +136,68 @@
 
         #message-input {
             flex: 1;
-            border-radius: 4px;
-            border: 1px solid #ced4da;
-            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid #e1e5eb;
+            padding: 12px 20px;
+            background-color: var(--accent-color);
+            transition: all 0.3s;
+        }
+
+        #message-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+            background-color: white;
         }
 
         #submit-btn {
-            border-radius: 4px;
+            border-radius: 25px;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            font-weight: 600;
+            transition: all 0.3s;
         }
 
-        .navbar {
-            margin-bottom: 20px;
+        #submit-btn:hover {
+            background-color: #3a5ccc;
+            border-color: #3a5ccc;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .dropdown-toggle {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        .dropdown-menu {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-item {
+            padding: 10px 15px;
+            transition: all 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
         }
     </style>
 </head>
@@ -79,7 +206,7 @@
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Message Board</a>
+            <a class="navbar-brand" href="#"><i class="fas fa-comment-dots"></i> Message Board</a>
             <div class="d-flex">
                 <div id="auth-buttons">
                     <!-- Login and Signup buttons will be dynamically inserted here -->
@@ -101,15 +228,21 @@
     </nav>
 
     <div class="container">
-        <h1 class="text-center mb-4">Message Board</h1>
-        <div class="message-board" id="message-board">
-            <!-- Messages will be dynamically inserted here -->
-        </div>
-        <div id="message-form-wrapper">
-            <form id="message-form">
-                <input type="text" id="message-input" class="form-control" placeholder="Type your message..." required>
-                <button type="submit" id="submit-btn" class="btn btn-primary">Submit</button>
-            </form>
+        <div class="message-board-container">
+            <div class="message-board-header">
+                <h1><i class="fas fa-comments me-2"></i>Community Messages</h1>
+            </div>
+            <div class="message-board" id="message-board">
+                <!-- Messages will be dynamically inserted here -->
+            </div>
+            <div id="message-form-wrapper">
+                <form id="message-form">
+                    <input type="text" id="message-input" class="form-control" placeholder="Type your message..." required>
+                    <button type="submit" id="submit-btn" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-1"></i> Send
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
